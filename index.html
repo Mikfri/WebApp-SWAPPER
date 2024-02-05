@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Helper websites:
+    https://medium.com/codingthesmartway-com-blog/getting-started-with-axios-166cb0035237
+    https://bootswatch.com/
+-->
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Swapper UI</title>
+  <!-- BOOTSTRAP 5 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- BOOTSTRAP VUE -->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap-vue@latest/dist/bootstrap-vue.min.js"></script> -->
+  <!-- AXIOS -->
+  <script src="https://cdn.jsdelivr.net/npm/axios@latest/dist/axios.min.js"></script>
+  <!-- VUE -->
+  <script src="https://cdn.jsdelivr.net/npm/vue@latest"></script>
+  <!-- CHART.JS -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@latest"></script>
+  <!-- EXTERN CSS -->
+  <link rel="stylesheet" href="site.css">
+  <!-- INTERN CSS -->
+  <style>
+    .custom-button {
+      width: 150px;
+    }
+  </style>
+</head>
+<!-- SHIFT + ALT + F -->
+
+<body>
+  <div id="background">
+    <img src="Images/SWAPPER_BG.jpg" alt="Background">
+  </div>
+
+  <div class="container">
+    <div class="text-center text-light p-5">
+      <h1><b>SWAPPER</b></h1>
+      <h7><b>S</b>pongebobs-<b>W</b>eb-<b>APP</b>lication-of-<b>E</b>asy<b>R</b>equests</h7>
+      <h6>| #json | #vue-3 | #axios | #bootstrap5 | #CORS | </h6>
+      <h7><a href="https://mf-REST-Book.azurewebsites.net/api/Book" target="_blank">TARGET SITE FOR .json-string</a>
+      </h7>
+    </div>
+    <div class="row">
+      <div class="column-7 text-light"> <!-- Første item række1 fylder 7 colonner -->
+        <h5>API-backend correspondance</h5>
+      </div>
+    </div>
+
+    <div id="app"> <!-- Nej.. Man kan ikke have 2 id samme div element -->
+      <div id="accordion">
+
+        <!-- GET() SECTION -->
+        <div class="card">
+          <div class="card-header">
+            <a class="btn" data-bs-toggle="collapse" href="#collapseGet">
+              <button class="btn btn-info text-light custom-button" type="button"><b>GET</b></button><b> /api/Books/</b>
+            </a>
+          </div>
+          <div class="collapse show" id="collapseGet">
+            <!-- data-bs-parent: Sørger for alle andre `class="collapse"` lukker når andre er viste -->
+            <div class="card-body row">
+              <div class="col-md-5">
+                <div class="mb-3 mt-3">
+                  <div class="d-flex justify-content-between">
+                    <button id="getAllButton" @click="getAllBooks" class="btn btn-info text-light"><b>Get all books</b></button>
+                    <button id="clearButton" @click="clearOutput" class="btn btn-outline-info"><b>Clear </b></button>
+                  </div>
+                </div>
+                <div class="input-group mb-3 mt-3">
+                  <input v-model="byTitle" type="text" class="form-control" placeholder="Title name">
+                  <button id="filterByTitle" @click="filterByTitle(byTitle)" class="btn btn-info text-light"><b>Filter
+                      by Title</b></button>
+                  <!-- <button id="resetFilter" @click="resetFilter" class="btn btn-outline-info"><b>Reset Filter</b></button> -->
+                </div>
+                <div class="input-group mb-3 mt-3">
+                  <input v-model.number="minPrice" class="form-control" type="number" placeholder="Min price">
+                  <input v-model.number="maxPrice" class="form-control" type="number" placeholder="Max price">
+                  <button id="filterByPrice" @click="filterByPrice()" class="btn btn-info text-light"><b>Filter by
+                      Price</b></button>
+                </div>
+                <div>
+                  <ul v-if="bookList.length">
+                    <li>
+                      <span><b>{{getAllStatMsg}}</b></span>
+                      <span><b>{{getByTitStatMsg}}</b></span>
+                    </li>
+                    <!-- <li v-for="book in bookList"> {{ book }} </li> -->
+                    <table v-if="bookList.length> 0" class="table table-bordered">
+                      <thead>
+                        <th><button @click="sortById()">Id</button></th>
+                        <th><button @click="sortByTitle()">Title</button></th>
+                        <th>Price
+                          <button @click="sortByPriceAscending()">asc</button>
+                          <button @click="sortByPriceDescending()">desc</button>
+                        </th>
+                      </thead>
+                      <tbody>
+                        <tr v-for="book in bookList">
+                          <td>{{book.id}}</td>
+                          <td>{{book.title}}</td>
+                          <td>{{book.price}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </ul>
+                  <div v-else> No books
+                    <ul>
+                      <li>
+                        <span><b>{{getAllStatMsg}}</b></span>
+                        <span><b>{{getByTitStatMsg}}</b></span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-5">
+                <div class="card-body">
+                  <canvas id="myChart"></canvas>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- POST() SECTION -->
+        <div class="card">
+          <div class="card-header">
+            <a class="btn" data-bs-toggle="collapse" href="#collapsePost">
+              <button class="btn btn-success text-light custom-button" type="button"><b>POST</b></button>
+              <b> /api/Books/</b>
+            </a>
+            
+
+          </div>
+          <div id="collapsePost" class="collapse"> <!-- data-bs-parent="#accordion" -->
+            <div class="card-body col-md-5">
+              <div class="input-group mb-3 mt-3">
+                <input v-model="addData.title" type="text" class="form-control" placeholder="Title name">
+                <!-- type=number:    sikrer os vi kun kan input tal via browseren -->
+                <!-- v-model.number: er den forventede værdi (null vs "") fx: updData: { ... price: null } -->
+                <input v-model.number="addData.price" type="number" class="form-control" placeholder="Price">
+                <button id="buttonPost" @click="addBook()" class="btn btn-success"><b>Create</b></button>
+              </div>
+              <div>
+                <ul>
+                  <li><span><b>{{addStatMsg}}</b></span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- GET(ID) SECTION -->
+        <div class="card">
+          <div class="card-header">
+            <a class="btn" data-bs-toggle="collapse" href="#collapseGetId">
+              <button class="btn btn-info text-light custom-button" type="button"><b>GET</b></button><b>
+                /api/Books/{id}</b>
+            </a>
+          </div>
+          <div id="collapseGetId" class="collapse">
+            <div class="card-body col-md-5">
+              <div class="input-group mb-3 mt-3">
+                <input v-model.number="getId" type="number" class="form-control" placeholder="ID ">
+                <button id="buttonGetById" @click="getById(getId)" class="btn btn-info text-light"><b>Get by
+                    ID</b></button>
+              </div>
+              <div>
+                <ul v-if="singleBook">
+                  <li> <span><b>{{ getIdStatMsg }}</b></span></li>
+                  <li> {{ singleBook }}</li>
+                </ul>
+                <ul v-else>
+                  <li><span><b>{{getIdStatMsg}}</b></span></li>
+              </div>
+            </div>
+          </div>
+          <!-- PUT(id) SECTION -->
+          <div class="card">
+            <div class="card-header">
+              <a class="btn" data-bs-toggle="collapse" href="#collapseUpdate">
+                <button class="btn btn-warning text-light custom-button" type="button"><b>PUT </b></button>
+                <b> /api/Books/{id}</b>
+              </a>
+            </div>
+            <div id="collapseUpdate" class="collapse">
+              <div class="card-body col-md-5">
+                <div class="input-group mb-3 mt-3">
+                  <input v-model.number="updData.id" type="number" class="form-control" placeholder="ID">
+                  <input v-model="updData.title" type="text" class="form-control" placeholder="Title name">
+                  <input v-model.number="updData.price" type="number" class="form-control" placeholder="Price">
+                  <button id="buttonPut" @click="updateBook(updData.id)" class="btn btn-warning text-light"
+                    :disabled="!updData.id"><b>Edit </b></button>
+                  <!-- <button id="buttonPut" @click="updateBook()" class="btn btn-warning text-light"><b>Edit </b></button> -->
+                </div>
+                <div><span><b>{{updStatMsg}}</b></span></div>
+              </div>
+            </div>
+          </div>
+          <!-- DELETE(id) SECTION -->
+          <div class="card">
+            <div class="card-header">
+              <a class="btn" data-bs-toggle="collapse" href="#collapseDelete">
+                <button class="btn btn-danger text-light custom-button" type="button"><b>DELETE</b></button>
+                <b> /api/Books/{id}</b>
+              </a>
+            </div>
+            <div id="collapseDelete" class="collapse">
+              <div class="card-body col-md-5">
+                <div class="input-group mb-3 mt-3">
+                  <!-- Input field for the ID of the book to delete -->
+                  <input v-model.number="id" type="number" class="form-control" placeholder="ID">
+                  <!-- Button to trigger the deleteBook method -->
+                  <button id="buttonDelete" @click="deleteBook(id)"
+                    class="btn btn-danger text-light"><b>Delete</b></button>
+                </div>
+                <div>
+                  <span><b>{{delStatMsg}}</b></span><!-- <span :class="{ 'text-success': delStatMsg, 'text-danger': !delStatMsg }"><b>{{delStatMsg || 'Book not found!'}}</b></span> -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACCORDION /END: BELOW -->
+      </div>
+      <!-- ID = APP /END: BELOW -->
+    </div>
+    <!-- CONTAINER /END: BELOW -->
+  </div>
+
+  <br><br><br>
+  <script src="js/main.js"></script>
+</body>
+
+</html>

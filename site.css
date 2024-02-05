@@ -1,0 +1,45 @@
+html {
+    font-size: 11px;
+    position: relative;
+    min-height: 100%;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 14px;
+    }
+}
+
+body {
+    height: 100%;
+    margin-bottom: 60px;
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.col-25 {
+    width: 25%;
+    padding: 5;
+}
+
+/* ---: BG SETUP :--- */
+
+#background {
+    background-image: url("Images/SWAPPER_BG.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: white;
+    position: fixed;
+    /* top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0; */
+    z-index: -1; /* Sæt z-index til -1 for at placere baggrunden bag alt andet indhold */
+}
+
+#accordion {
+    background: rgba(255, 255, 255, 0.75);
+    padding: 20px;
+    border-radius: 10px;
+}
