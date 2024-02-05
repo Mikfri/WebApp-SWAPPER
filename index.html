@@ -83,6 +83,12 @@
                       Price</b></button>
                 </div>
                 <div>
+                  <ul v-if="bookList.null"> Loading...
+                    <li>
+                      <span><b>{{getAllStatMsg}}</b></span>
+                      <span><b>{{getByTitStatMsg}}</b></span>
+                    </li>
+                  </ul>
                   <ul v-if="bookList.length">
                     <li>
                       <span><b>{{getAllStatMsg}}</b></span>
